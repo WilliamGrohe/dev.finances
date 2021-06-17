@@ -1,4 +1,7 @@
 <h1 align="center">dev.Finance$</h1>
+
+![Logo](./assets/logo.svg)
+
 <h3 align="center">🚧 Em Construção 🚧</h3>
 
 ![Preview Desktop Page](./assets/DevFinancesApresentation.png)
