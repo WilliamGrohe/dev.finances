@@ -12,27 +12,18 @@ const Modal = {
     }
 }
 
+const Storage = {
+    get() {
+        return JSON.parse(localStorage.getItem("dev.fincances:transactions")) || []
+    },
+
+    set(transactions){
+        localStorage.setItem("dev.fincances:transactions", JSON.stringify(transactions))
+    }
+}
+
 const Transaction = {
-    all: [
-        {
-            id: 1,
-            description: 'Luz',
-            amount: -50005,
-            date: '23/01/2021'
-        },
-        {
-            id: 2,
-            description: 'Criação de Site',
-            amount: 500005,
-            date: '15/01/2021'
-        },
-        {
-            id: 3,
-            description: 'Aluguel',
-            amount: -150000,
-            date: '30/01/2021'
-        },
-    ],
+    all: Storage.get(),
 
     add(transaction) {
         Transaction.all.push(transaction)
@@ -82,12 +73,13 @@ const DOM = {
 
     addTransaction(transaction, index){
         const tr = document.createElement('tr')
-        tr.innerHTML = DOM.innerHTMLTransaction(transaction)
+        tr.dataset.index = index
+        tr.innerHTML = DOM.innerHTMLTransaction(transaction, index)
 
         DOM.TransactionsContainer.appendChild(tr)
     },
 
-    innerHTMLTransaction(transaction) { 
+    innerHTMLTransaction(transaction, index) { 
         const CSSclass = transaction.amount > 0 ? "income" : "expense"
 
         const formatedAmount = Utils.formatCurrency(transaction.amount)
@@ -97,7 +89,7 @@ const DOM = {
             <td class=${CSSclass}>${formatedAmount}</td>
             <td>${transaction.date}</td>
             <td>
-                <img src="./assets/minus.svg" alt="Remover transação">
+                <img onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
             </td>
         `
         return html
@@ -150,11 +142,11 @@ const Utils = {
 
 const App = {
     init(){
-        Transaction.all.forEach(transaction => {
-            DOM.addTransaction(transaction)
-        })
+        Transaction.all.forEach(DOM.addTransaction)
         
-        DOM.updateBalance()        
+        DOM.updateBalance()
+
+        Storage.set(Transaction.all)
     },
 
     reload(){
