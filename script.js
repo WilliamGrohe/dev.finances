@@ -12,29 +12,27 @@ const Modal = {
     }
 }
 
-const transactions = [
-    {
-        id: 1,
-        description: 'Luz',
-        amount: -50005,
-        date: '23/01/2021'
-    },
-    {
-        id: 2,
-        description: 'Criação de Site',
-        amount: 500005,
-        date: '15/01/2021'
-    },
-    {
-        id: 3,
-        description: 'Aluguel',
-        amount: -150000,
-        date: '30/01/2021'
-    },
-]
-
 const Transaction = {
-    all: transactions,
+    all: [
+        {
+            id: 1,
+            description: 'Luz',
+            amount: -50005,
+            date: '23/01/2021'
+        },
+        {
+            id: 2,
+            description: 'Criação de Site',
+            amount: 500005,
+            date: '15/01/2021'
+        },
+        {
+            id: 3,
+            description: 'Aluguel',
+            amount: -150000,
+            date: '30/01/2021'
+        },
+    ],
 
     add(transaction) {
         Transaction.all.push(transaction)
@@ -123,6 +121,17 @@ const DOM = {
 }
 
 const Utils = {
+    formatAmount(value){
+        value = Number(value) * 100
+        
+        return value
+    },
+
+    formatDate(date){
+        const splittedDate = date.split("-")
+        return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
+    },
+
     formatCurrency(value){
         const signal = Number(value) < 0 ? "- " : ""
 
@@ -177,11 +186,34 @@ const Form = {
             }
     },
 
+    formatValues(){
+        let { description, amount, date } = Form.getValues()
+
+        amount = Utils.formatAmount(amount)
+        date = Utils.formatDate(date)
+
+        return{
+            description,
+            amount,
+            date
+        }
+    },
+
+    clearFields(){
+        Form.description.value = ""
+        Form.amount.value = ""
+        Form.date.value = ""
+    },
+
     submit(event) {
         event.preventDefault()
 
         try {
             Form.validateFields()
+            const newTransaction = Form.formatValues()
+            Transaction.add(newTransaction)
+            Form.clearFields()
+            Modal.close()
         } catch (error) {
             alert(error.message)
         }
